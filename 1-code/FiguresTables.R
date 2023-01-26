@@ -1,4 +1,4 @@
-#### Analysis of Agroforice data & export of Tables and Figures###
+#### Analysis of Agroforice data - exportation of Tables and Figures###
 ##R Perez 06/01/2022
 
 # Load packages  -----------------------------------------------------------
@@ -10,7 +10,7 @@ InstIfNec<-function (pack) {
   do.call(require,as.list(pack)) }
 lapply(packs, InstIfNec)
 
-source('1-code/Mapping_light.R')
+# source('1-code/Mapping_light.R')
 source('1-code/helpers.R')
 
 #  inputs ---------------------------------------------------------
@@ -62,7 +62,32 @@ data.table::fwrite(table_design,file = '2-outputs/Tables/Design.csv',row.names =
 
 
 # map of light ------------------------------------------------------------
+###relatively to incident PAR0
+load(file = '0-data/MapLight.RData')
 
+lims=as.numeric(grid_df_day_comp%>%
+                  group_by(Treatment)%>%
+                  summarize(x=max(x,na.rm=T),
+                            y=max(y,na.rm=T))%>%
+                  ungroup()%>%
+                  summarize(x=min(x),y=min(y)))
+
+map_ligth_rel=grid_df_day_comp%>%
+  mutate(density=as.numeric(density))%>%
+  arrange(density)%>%
+  filter(x<=lims[1] & y<=lims[2])%>%
+  ggplot(aes(x=x, y=y,fill=Intercepted_rel,col=Intercepted_rel))+
+  geom_point(pch=22)+
+  geom_point(aes(x=x_tree_1,y=y_tree_1),col=2,pch=0)+
+  geom_point(aes(x=x_tree_2,y=y_tree_2),col=2,pch=0)+
+  xlim(c(0,lims[1]))+
+  ylim(c(0,lims[2]))+
+  facet_wrap(~paste(sprintf("%03d",density),'plant.ha-2')) +
+  coord_fixed()+
+  labs(x = 'x (m)', y = 'y (m)',fill= '%',col='%') +
+  # theme(legend.position="bottom")+
+  scale_fill_viridis()+
+  scale_color_viridis()
 
 map_ligth_rel+myTheme+theme(legend.direction = 'horizontal',legend.position = c(0.83,0.12))
 ggsave(file = "2-outputs/Figures/Fig_light_planting.png")
@@ -90,10 +115,6 @@ don_crop=don_crop%>%
 inc=meteo%>%
   mutate(Hour=ymd_hms(str_replace(string = date,pattern = '2019-03-20',replacement = '2020-05-06')),ppfd_inc=conv0*`globalIrradiance (W/m2)`)%>%
   select(Hour,ppfd_inc)
-
-meteo%>%
-  mutate(Hour=ymd_hms(str_replace(string = date,pattern = '2019-03-20',replacement = '2020-05-06')),rad_inc=conv0*`globalIrradiance (W/m2)`)%>%
-  summarize(inc_day=sum(rad_inc*60)*conv)
 
 
 inc_all=merge(inc%>%

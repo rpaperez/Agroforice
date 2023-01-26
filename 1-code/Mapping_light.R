@@ -290,3 +290,5 @@ map_ligth_rel=grid_df_day_comp%>%
   scale_fill_viridis()+
   scale_color_viridis()
 
+# export grid
+# save(grid_df_day_comp,file = '0-data/MapLight.RData')

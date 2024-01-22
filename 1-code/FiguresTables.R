@@ -1,5 +1,5 @@
 #### Analysis of Agroforice data - exportation of Tables and Figures###
-##R Perez 06/01/2022
+##R Perez 06/01/2023
 
 # Load packages  -----------------------------------------------------------
 
@@ -10,7 +10,7 @@ InstIfNec<-function (pack) {
   do.call(require,as.list(pack)) }
 lapply(packs, InstIfNec)
 
-# source('1-code/Mapping_light.R')
+source('1-code/Mapping_light.R')
 source('1-code/helpers.R')
 
 #  inputs ---------------------------------------------------------

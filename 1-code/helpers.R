@@ -1,6 +1,8 @@
 
 # helpers -----------------------------------------------------------------
 
+shape_Trt2=c(15,16,17)
+names(shape_Trt2)=c('C','S-AF','S')
 
 # functions ---------------------------------------------------------------
 
@@ -148,7 +150,7 @@ f.ACP=function(don=don,vars='vars',table_type=table_type){
     xlim(limits=c(-1,1))+
     ylab(paste('PC2 (',round(dataEigen[2,'eigen']),'%)',sep=''))+
     xlab(paste('PC1 (',round(dataEigen[1,'eigen']),'%)',sep=''))+
-    # scale_color_manual(name='',values =colors_var )+
+    # scale_color_manual(name='',values =colors_var )
     theme(legend.position='right')
   
   gr_corr13=ggplot(data=dataCircle,aes(x = x,y = z))+
@@ -159,6 +161,17 @@ f.ACP=function(don=don,vars='vars',table_type=table_type){
     xlim(limits=c(-1,1))+
     ylab(paste('PC3 (',round(dataEigen[3,'eigen']),'%)',sep=''))+
     xlab(paste('PC1 (',round(dataEigen[1,'eigen']),'%)',sep=''))+
+    # scale_color_manual(name='',values =colors_var )+
+    theme(legend.position='right')
+  
+  gr_corr23=ggplot(data=dataCircle,aes(x = y,y = z))+
+    geom_path(data=circle,aes(x = x,y = z))+
+    geom_segment(aes(x=0,y=0,xend=y,yend=z,col=type),arrow = arrow(length = unit(0.3,"cm")))+
+    geom_text_repel(data=dataCircle,aes(x = y,y = z,col=type,label=var),segment.colour = NA,parse=T)+
+    ylim(limits=c(-1,1))+
+    xlim(limits=c(-1,1))+
+    ylab(paste('PC3 (',round(dataEigen[3,'eigen']),'%)',sep=''))+
+    xlab(paste('PC2 (',round(dataEigen[2,'eigen']),'%)',sep=''))+
     # scale_color_manual(name='',values =colors_var )+
     theme(legend.position='right')
   
@@ -201,17 +214,20 @@ f.ACP=function(don=don,vars='vars',table_type=table_type){
   
   
   
+  
+  
   gr_proj12=data%>%
     ggplot()+
     geom_hline(yintercept = 0)+
     geom_vline(xintercept = 0)+
-    geom_point(aes(x = x,y = y,col=Treatment),alpha=0.6,size=4)+ ##to adapt with rep name
+    geom_segment(aes(x = x_mid,xend=x,yend=y,y = y_mid,col=Treatment),alpha=0.4)+
+    geom_point(aes(x = x,y = y,shape=Treatment,fill=Treatment,col=Treatment),alpha=0.6,size=4)+ ##to adapt with rep name
     geom_label(aes(x = x_mid,y = y_mid,fill=Treatment,label=paste(Variety)),alpha=0.4,size=4)+
-    geom_segment(aes(x = x_mid,xend=x,yend=y,y = y_mid,col=Treatment,alpha=0.4))+
-    guides(col=guide_legend(title=''))+
+    # guides(col=guide_legend(title=''),fill=guide_legend(title=''))+
     xlab(paste('PC1 (',sumI1,'%)',sep=''))+
     # theme(legend.position=c(0.8,0.9))+
     scale_color_manual(values = color_Trt)+
+    scale_shape_manual(values=shape_Trt2)+
     scale_fill_manual(values = color_Trt)+
     ylab(paste('PC2 (',sumI2,'%)',sep=''))+
     theme(legend.title = element_blank())
@@ -220,19 +236,37 @@ f.ACP=function(don=don,vars='vars',table_type=table_type){
     ggplot()+
     geom_hline(yintercept = 0)+
     geom_vline(xintercept = 0)+
-    geom_point(aes(x = x,y = z,col=Treatment),alpha=0.6,size=4)+ ##to adapt with rep name
-    geom_label(aes(x = x_midz,y = z_mid,fill=Treatment,label=paste(Variety)),alpha=0.4,size=4)+
-    geom_segment(aes(x = x_midz,xend=x,yend=z,y = z_mid,col=Treatment,alpha=0.4))+
-    guides(col=guide_legend(title=''))+
-    scale_color_manual(values = color_Trt)+
-    scale_fill_manual(values = color_Trt)+
+    geom_segment(aes(x = x_mid,xend=x,yend=z,y = z_mid,col=Treatment),alpha=0.4)+
+    geom_point(aes(x = x,y = z,fill=Treatment,shape=Treatment,col=Treatment),alpha=0.6,size=4)+ ##to adapt with rep name
+    geom_label(aes(x = x_mid,y = z_mid,fill=Treatment,label=paste(Variety)),alpha=0.4,size=4)+
+    # guides(col=guide_legend(title=''))+
     xlab(paste('PC1 (',sumI1,'%)',sep=''))+
     # theme(legend.position=c(0.8,0.9))+
+    scale_color_manual(values = color_Trt)+
+    scale_shape_manual(values=shape_Trt2)+
+    scale_fill_manual(values = color_Trt)+
+    ylab(paste('PC3 (',sumI3,'%)',sep=''))+
+    theme(legend.title = element_blank())
+  
+  gr_proj23=data%>%
+    ggplot()+
+    geom_hline(yintercept = 0)+
+    geom_vline(xintercept = 0)+
+    geom_segment(aes(x = y_mid,xend=y,yend=z,y = z_mid,col=Treatment),alpha=0.4)+
+    geom_point(aes(x = y,y = z,fill=Treatment,shape=Treatment,col=Treatment),alpha=0.6,size=4)+ ##to adapt with rep name
+    geom_label(aes(x = y_mid,y = z_mid,fill=Treatment,label=paste(Variety)),alpha=0.4,size=4)+
+    # guides(col=guide_legend(title=''))+
+    xlab(paste('PC2 (',sumI2,'%)',sep=''))+
+    # theme(legend.position=c(0.8,0.9))+
+    scale_color_manual(values = color_Trt)+
+    scale_shape_manual(values=shape_Trt2)+
+    scale_fill_manual(values = color_Trt)+
     ylab(paste('PC3 (',sumI3,'%)',sep=''))+
     theme(legend.title = element_blank())
   
   
-  res=list(gr_vp=gr_vp,gr_corr12=gr_corr12,gr_corr13=gr_corr13,gr_proj12=gr_proj12,gr_proj13=gr_proj13)
+  
+  res=list(data=data,table=acp$co,gr_vp=gr_vp,gr_corr12=gr_corr12,gr_corr13=gr_corr13,gr_proj12=gr_proj12,gr_proj13=gr_proj13,gr_proj23=gr_proj23,gr_corr23=gr_corr23)
   return(res)
   
 }
